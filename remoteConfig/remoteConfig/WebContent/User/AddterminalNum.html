@@ -1,0 +1,155 @@
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <!-- for 360 分别代表用极速模式，兼容模式，IE模式打开-->
+    <meta name="renderer" content="webkit|ie-comp|ie-stand" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,member-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link href="../Content/css/H-ui.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/css/H-ui.admin.css" rel="stylesheet" type="text/css" />
+    <link href="../lib/Hui-iconfont/1.0.1/iconfont.css" rel="stylesheet" type="text/css" />
+    <link href="../lib/icheck/skins/all.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="pd-10">
+        <form action="../User/UserAddTerminalEdit" method="post" class="form form-horizontal" id="form-member-edit">
+        	<div class="row cl">
+                <label class="form-label col-3">请选择站点：</label>
+                <div class="formControls col-5">
+                    <select id="StationList" name="StationList" class="input-text">                                                                                             
+                     </select>
+				</div>
+                <div class="col-4"></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-3"><span class="c-red">*</span>终端编号(后2位)：</label>
+                <div class="formControls col-5">                    
+                     <input type="text" class="input-text" id="terminalNum" name="terminalNum" datatype="*2-2" nullmsg="终端编号不能为空"/>
+                </div>
+                <div class="col-4"></div>
+            </div>            
+            <div class="row cl">
+                <label class="form-label col-3">终端位置：</label>
+                <div class="formControls col-5">
+                    <input type="text" class="input-text" id="terminalLocation" name="terminalLocation" />
+                </div>
+                <div class="col-4"></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-3">经度：</label>
+                <div class="formControls col-5">
+                    <input type="text" class="input-text" id="longitude" name="longitude" />
+                </div>
+                <div class="col-4">注意：小数点后的最后一位不能为0</div>
+            </div> 
+            <div class="row cl">
+                <label class="form-label col-3">纬度：</label>
+                <div class="formControls col-5">
+                    <input type="text" class="input-text" id="latitude" name="latitude" />
+                </div>
+                <div class="col-4">注意：小数点后的最后一位不能为0</div>
+            </div> 
+            <div class="row cl">
+                <label class="form-label col-3">终端描述：</label>
+                <div class="formControls col-5">
+                    <input type="text" class="input-text" id="description" name="description"/>
+                </div>                            
+            </div>    
+            <div class="row cl">
+                <label class="form-label col-3"><span class="c-red">*</span>资源导航标签：</label>
+                <div class="formControls col-5">
+                    <input type="text" class="input-text" id="treenum" name="treenum" datatype="*" nullmsg="资源导航不能为空"/>
+                </div>
+                <div class="col-4"></div>
+            </div>                                      
+            <div class="row cl">
+                <div class="col-3-2 col-offset-4">
+                    <input class="btn btn-primary radius" type="submit"  id="SaveButton" name="SaveButton" value="&nbsp;&nbsp;&nbsp;保存&nbsp;&nbsp;&nbsp;" />
+               		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+               		<input class="btn btn-primary radius" type="button" id="CancelButton" class="CancelButton" value="&nbsp;&nbsp;取消&nbsp;&nbsp;">              		              
+                </div>
+              
+            </div>
+        </form>
+    </div>
+
+    <script src="../Scripts/jquery-1.11.3.min.js"></script>
+   <script src="../lib/icheck/icheck.min.js"></script>
+
+    <script type="text/javascript" src="../lib/Validform/5.3.2/Validform.min.js"></script>
+
+    <script type="text/javascript" src="../lib/layer/1.9.3/layer.js"></script>
+    <script type="text/javascript" src="../lib/H-ui.js"></script>
+    <script type="text/javascript" src="../lib/H-ui.admin.js"></script>
+
+    <script type="text/javascript">
+    	var StationList = null;
+        $(function () {       	
+        	$.ajax({
+                type: 'GET',
+                url: '../User/GetAddUserSensorStationList',
+                async: false,
+                cache: false,
+                success: function (result) {
+                	var result= eval("(" + result + ")"); 
+                	StationList = result;                  	
+                }
+            });
+        	
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%'
+            });
+            //验证表单
+            $("#form-member-edit").Validform({
+                tiptype: 2,
+                ajaxPost: true,
+                callback: function (data) {
+                    if (data.success) {                   	
+                        layer.msg('修改用户终端信息成功!', { 
+                        	icon: 1, 
+                        	time: 1000,
+                        	end:function(){
+                        		var index = parent.layer.getFrameIndex(window.name);
+                                //parent.$('.btn-success').click();
+                                parent.$('#list_data').datagrid('reload');
+                                parent.layer.close(index);
+                        	}});
+                        
+                    } else {
+                        layer.msg('修改失败,请检查录入项是否规范!', { icon: 1, time: 1000 });
+                    }
+
+                }
+            });
+            
+            $("#CancelButton").click(function(){
+            	var index = parent.layer.getFrameIndex(window.name);
+                //parent.$('.btn-success').click();
+                parent.$('#list_data').datagrid('reload');
+                parent.layer.close(index);
+            });                        
+
+        });
+        function load_conditions(){   	
+        	console.log("load");
+        	console.log(StationList.stationList.length);
+    		for(var i = 0;i < StationList.stationList.length; i ++){    		
+    			console.log(StationList.stationList[i]);
+    			$("#StationList").append('<option value="'+StationList.stationList[i]+'">'+StationList.stationList[i]+'</option>');
+    		}
+    	}
+    	window.onload = function(){
+    		load_conditions();
+    	}
+    </script>
+
+</body>
+</html>
